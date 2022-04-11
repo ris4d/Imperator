@@ -98,9 +98,7 @@ pragma solidity ^0.8.4;
   }
   
   
-  /**
-   * @dev Collection of functions related to the address type
-   */
+ 
   library Address {
 
       function isContract(address account) internal view returns (bool) {
@@ -171,25 +169,19 @@ pragma solidity ^0.8.4;
   
       event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
   
-      /**
-       * @dev Initializes the contract setting the deployer as the initial owner.
-       */
+      
       constructor () internal {
           address msgSender = _msgSender();
           _owner = msgSender;
           emit OwnershipTransferred(address(0), msgSender);
       }
   
-      /**
-       * @dev Returns the address of the current owner.
-       */
+      
       function owner() public view returns (address) {
           return _owner;
       }
   
-      /**
-       * @dev Throws if called by any account other than the owner.
-       */
+     
       modifier onlyOwner() {
           require(_owner == _msgSender(), "Ownable: caller is not the owner");
           _;
@@ -211,13 +203,6 @@ pragma solidity ^0.8.4;
           return _lockTime;
       }
   
-      //Locks the contract for owner for the amount of time provided
-      function lock(uint256 time) public virtual onlyOwner {
-          _previousOwner = _owner;
-          _owner = address(0);
-          _lockTime = now + time;
-          emit OwnershipTransferred(_owner, address(0));
-      }
       
       //Unlocks the contract for owner when _lockTime is exceeds
       function unlock() public virtual {
@@ -802,10 +787,7 @@ pragma solidity ^0.8.4;
           uint256 half = contractTokenBalance.div(2);
           uint256 otherHalf = contractTokenBalance.sub(half);
   
-          // capture the contract's current ETH balance.
-          // this is so that we can capture exactly the amount of ETH that the
-          // swap creates, and not make the liquidity event include any ETH that
-          // has been manually sent to the contract
+          
           uint256 initialBalance = address(this).balance;
   
           // swap tokens for ETH
