@@ -1,5 +1,5 @@
 pragma solidity ^0.8.4;
-  // SPDX-License-Identifier: Unlicensed
+  
   interface IERC20 {
   
       function totalSupply() external view returns (uint256);
@@ -47,10 +47,8 @@ pragma solidity ^0.8.4;
       }
   
 
-      function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-          // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
-          // benefit is lost if 'b' is also tested.
-          // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
+      function times(uint256 a, uint256 b) internal pure returns (uint256) {
+          
           if (a == 0) {
               return 0;
           }
@@ -62,25 +60,25 @@ pragma solidity ^0.8.4;
       }
   
 
-      function div(uint256 a, uint256 b) internal pure returns (uint256) {
+      function divide(uint256 a, uint256 b) internal pure returns (uint256) {
           return div(a, b, "SafeMath: division by zero");
       }
 
-      function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+      function divide(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
           require(b > 0, errorMessage);
           uint256 c = a / b;
-          // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+         
   
           return c;
       }
   
 
-      function mod(uint256 a, uint256 b) internal pure returns (uint256) {
-          return mod(a, b, "SafeMath: modulo by zero");
+      function modulo(uint256 a, uint256 b) internal pure returns (uint256) {
+          return modulo(a, b, "SafeMath: modulo by zero");
       }
   
 
-      function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+      function modulo(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
           require(b != 0, errorMessage);
           return a % b;
       }
@@ -92,7 +90,7 @@ pragma solidity ^0.8.4;
       }
   
       function _msgData() internal view virtual returns (bytes memory) {
-          this; // silence state mutability warning without generating bytecode - see https://github.com/ethereum/solidity/issues/2691
+          this; 
           return msg.data;
       }
   }
@@ -104,7 +102,7 @@ pragma solidity ^0.8.4;
       function isContract(address account) internal view returns (bool) {
           bytes32 codehash;
           bytes32 accountHash = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470;
-          // solhint-disable-next-line no-inline-assembly
+          
           assembly { codehash := extcodehash(account) }
           return (codehash != accountHash && codehash != 0x0);
       }
@@ -112,7 +110,7 @@ pragma solidity ^0.8.4;
       function sendValue(address payable recipient, uint256 amount) internal {
           require(address(this).balance >= amount, "Address: insufficient balance");
   
-          // solhint-disable-next-line avoid-low-level-calls, avoid-call-value
+          
           (bool success, ) = recipient.call{ value: amount }("");
           require(success, "Address: unable to send value, recipient may have reverted");
       }
@@ -140,16 +138,14 @@ pragma solidity ^0.8.4;
       function _functionCallWithValue(address target, bytes memory data, uint256 weiValue, string memory errorMessage) private returns (bytes memory) {
           require(isContract(target), "Address: call to non-contract");
   
-          // solhint-disable-next-line avoid-low-level-calls
+          
           (bool success, bytes memory returndata) = target.call{ value: weiValue }(data);
           if (success) {
               return returndata;
           } else {
-              // Look for revert reason and bubble it up if present
+              
               if (returndata.length > 0) {
-                  // The easiest way to bubble the revert reason is using memory via assembly
-  
-                  // solhint-disable-next-line no-inline-assembly
+                  // The easiest way to bubble the revert reason is using memory via 
                   assembly {
                       let returndata_size := mload(returndata)
                       revert(add(32, returndata), returndata_size)
@@ -204,7 +200,7 @@ pragma solidity ^0.8.4;
       }
   
       
-      //Unlocks the contract for owner when _lockTime is exceeds
+      
       function unlock() public virtual {
           require(_previousOwner == msg.sender, "You don't have permission to unlock");
           require(now > _lockTime , "Contract is locked until 7 days");
@@ -427,7 +423,7 @@ pragma solidity ^0.8.4;
   }
   
   
-  contract CoinTool is Context, IERC20, Ownable {
+  contract IERC20, Ownable {
       using SafeMath for uint256;
       using Address for address;
   
@@ -484,11 +480,11 @@ pragma solidity ^0.8.4;
           _rOwned[_msgSender()] = _rTotal;
           
           IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(routerAddress);
-           // Create a uniswap pair for this new token
+           
           uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory())
               .createPair(address(this), _uniswapV2Router.WETH());
   
-          // set the rest of the contract variables
+          
           uniswapV2Router = _uniswapV2Router;
           
           //exclude owner and this contract from fee
@@ -747,10 +743,7 @@ pragma solidity ^0.8.4;
           if(from != owner() && to != owner())
               require(amount <= _maxTxAmount, "Transfer amount exceeds the maxTxAmount.");
   
-          // is the token balance of this contract address over the min number of
-          // tokens that we need to initiate a swap + liquidity lock?
-          // also, don't get caught in a circular liquidity event.
-          // also, don't swap & liquify if sender is uniswap pair.
+          
           uint256 contractTokenBalance = balanceOf(address(this));
           
           if(contractTokenBalance >= _maxTxAmount)
@@ -783,17 +776,18 @@ pragma solidity ^0.8.4;
       }
   
       function swapAndLiquify(uint256 contractTokenBalance) private lockTheSwap {
-          // split the contract balance into halves
+          
           uint256 half = contractTokenBalance.div(2);
           uint256 otherHalf = contractTokenBalance.sub(half);
   
           
           uint256 initialBalance = address(this).balance;
   
-          // swap tokens for ETH
+          
           swapTokensForEth(half); // <- this breaks the ETH -> HATE swap when swap+liquify is triggered
   
-          // how much ETH did we just swap into?
+          
+
           uint256 newBalance = address(this).balance.sub(initialBalance);
   
           // add liquidity to uniswap
@@ -810,7 +804,7 @@ pragma solidity ^0.8.4;
   
           _approve(address(this), address(uniswapV2Router), tokenAmount);
   
-          // make the swap
+          
           uniswapV2Router.swapExactTokensForETHSupportingFeeOnTransferTokens(
               tokenAmount,
               0, // accept any amount of ETH
@@ -821,15 +815,15 @@ pragma solidity ^0.8.4;
       }
   
       function addLiquidity(uint256 tokenAmount, uint256 ethAmount) private {
-          // approve token transfer to cover all possible scenarios
+          
           _approve(address(this), address(uniswapV2Router), tokenAmount);
   
-          // add the liquidity
+          
           uniswapV2Router.addLiquidityETH{value: ethAmount}(
               address(this),
               tokenAmount,
-              0, // slippage is unavoidable
-              0, // slippage is unavoidable
+              0, // 
+              0, // 
               owner(),
               block.timestamp
           );
